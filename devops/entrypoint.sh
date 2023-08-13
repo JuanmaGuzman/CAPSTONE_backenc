@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# Bail run on process fail
+# set -o errexit
+set -o nounset
+
+# This should be taken care of by the deployment tools for production
+if [ "$DEBUG" = "true" ]
+then
+    export PYTHONBREAKPOINT=ipdb.set_trace
+    poetry install
+    python manage.py migrate
+    # python manage.py collectstatic --noinput
+    # django-admin compilemessages
+
+    # I'd like to run gunicorn here, but I couldn't make reload to work
+    until uvicorn conf.asgi:application --reload --port 8000 --host 0.0.0.0; do
+        echo "Development server crashed... restarting" >&2
+        sleep 3;
+    done
+
+elif [ "${TESTING}" = "true" ]; then
+    export DEBUG=True
+    pytest -v --cov=.
+
+else
+    python manage.py migrate
+    # python manage.py collectstatic --noinput
+    # django-admin compilemessages
+    gunicorn conf.asgi:application -c /devops/gunicorn.conf.py
+fi

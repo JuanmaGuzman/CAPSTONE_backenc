@@ -1,0 +1,14 @@
+{% load i18n %}{% autoescape off %}
+{% blocktranslate %}Recibes este email ya que una de tus publicaciones fue rechazada.{% endblocktranslate %}
+
+{% translate "Tu publicación para los items:" %}
+{% block confirm_link %}
+Nombre: {{publication_item_name}}
+Marca: {{publication_item_brand}}
+{% endblock %}
+
+{% translate "Para más información por favor contáctate con nosotros." %}
+
+{% blocktranslate %}El equipo de {{ site_name }}{% endblocktranslate %}
+
+{% endautoescape %}

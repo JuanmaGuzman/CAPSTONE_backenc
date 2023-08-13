@@ -1,0 +1,3 @@
+{% load i18n %}{% autoescape off %}
+{% blocktranslate %}Compra fallida: {{ site_name }}{% endblocktranslate %}
+{% endautoescape %}

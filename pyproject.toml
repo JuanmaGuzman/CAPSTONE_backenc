@@ -1,0 +1,8 @@
+[tool.taskipy.tasks]
+test = "docker-compose exec backend pytest --no-migrations"
+lint = "docker-compose exec backend flake8"
+manage = "docker-compose exec backend python manage.py"
+docker = "docker-compose exec backend"
+poetry = "docker-compose exec backend poetry"
+dev = "docker-compose up"
+setup = "cd src && poetry install && poetry shell"

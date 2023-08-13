@@ -1,0 +1,53 @@
+version: "3.7"
+
+services:
+  db:
+    container_name: capstone-db
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+    volumes:
+      - capstone-db-volume:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -U $DATABASE_USER -d $DATABASE_NAME
+      interval: 5s
+      timeout: 2s
+      retries: 10
+
+  backend:
+    container_name: capstone-api-django
+    build: .
+    stdin_open: true
+    depends_on:
+      - db
+    volumes:
+      - ./src:/src
+    ports:
+      - 8001:8000
+    environment:
+      - DJANGO_SECRET_KEY
+      - DEBUG
+      - CI
+      - TESTING
+      - DATABASE_ENGINE
+      - DATABASE_PASSWORD
+      - DATABASE_USER
+      - DATABASE_PORT
+      - DATABASE_NAME
+      - DATABASE_HOST=db
+      - ALLOWED_HOSTS=[]
+      - FINTOC_HOLDER_ID
+      - FINTOC_INSTITUTION_ID
+      - FINTOC_NUMBER
+      - FINTOC_TYPE
+      - FINTOC_KEY
+      - FINTOC_PAYMENT_URI
+      - FINTOC_WEBHOOK_SECRET
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  capstone-db-volume:
